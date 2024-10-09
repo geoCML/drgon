@@ -1,0 +1,25 @@
+{
+  "name": "drgon",
+  "version": "0.1.0",
+  "description": "DRGON is a Distributed Registry of GISystem Over a Network",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/geoCML/drgon.git"
+  },
+  "author": "Tristan Damron",
+  "license": "GPL-2.0-only",
+  "bugs": {
+    "url": "https://github.com/geoCML/drgon/issues"
+  },
+  "homepage": "https://github.com/geoCML/drgon#readme",
+  "dependencies": {
+    "express": "^4.21.0",
+    "generate-api-key": "^1.0.2",
+    "pg-promise": "^11.9.1"
+  }
+}

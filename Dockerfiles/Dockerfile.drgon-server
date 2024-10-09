@@ -1,0 +1,20 @@
+FROM ubuntu:20.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update
+
+COPY ./src /drgon
+WORKDIR /drgon
+
+# Install NodeJS
+RUN apt install -y curl
+RUN curl -sL https://deb.nodesource.com/setup_20.x -o nodesource_setup.sh
+RUN bash nodesource_setup.sh
+RUN rm nodesource_setup.sh
+RUN apt install -y nodejs
+
+# Install npm dependencies
+RUN npm i
+
+# Start DRGON server
+CMD npm run start

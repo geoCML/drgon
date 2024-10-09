@@ -1,0 +1,27 @@
+---
+version: "3.7"
+services:
+  drgon-server:
+    build:
+      context: .
+      dockerfile: ./Dockerfiles/Dockerfile.drgon-server
+    image: ghcr.io/geocml/drgon:server
+    ports:
+      - "8000:8000"
+    hostname: drgon-server
+    networks:
+      - drgon-network
+  drgon-postgres:
+    build:
+      context: .
+      dockerfile: ./Dockerfiles/Dockerfile.drgon-postgres
+    image: ghcr.io/geocml/drgon:postgres
+    ports:
+      - "5433:5433"
+    hostname: drgon-postgres
+    networks:
+      - drgon-network
+networks:
+  drgon-network:
+    external: true
+    driver: bridge

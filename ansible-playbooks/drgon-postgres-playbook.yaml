@@ -1,0 +1,78 @@
+---
+- # Configure PostgreSQL
+  hosts: localhost
+  connection: local
+  gather_facts: yes
+  become: yes
+  tasks:
+    - name: Start PostgreSQL service
+      service:
+        enabled: yes
+        name: postgresql
+        state: started
+        use: service
+    - name: Change port to 5433
+      become_user: postgres
+      community.postgresql.postgresql_set:
+        name: "port"
+        value: 5433
+    - name: Allow postgres to sign in with peer authentication
+      become_user: postgres
+      community.postgresql.postgresql_pg_hba:
+        dest: /etc/postgresql/14/main/pg_hba.conf
+        address: local
+        users: postgres
+        method: peer
+        create: yes
+    - name: Set postgres' password
+      become_user: postgres
+      community.postgresql.postgresql_query:
+        query: ALTER USER postgres PASSWORD 'admin';
+    - name: Create new Postgres database
+      become_user: postgres
+      community.postgresql.postgresql_db:
+        name: drgon_db
+        conn_limit: 100
+    - name: Create 'registry' table
+      become_user: postgres
+      community.postgresql.postgresql_table:
+        table: registry
+        columns:
+          - id bigint
+          - url text primary key
+          - description text
+          - owner text
+          - tags text
+          - key text
+        owner: postgres
+        db: drgon_db
+    - name: Create 'users' table
+      become_user: postgres
+      community.postgresql.postgresql_table:
+        table: users
+        columns:
+          - email text primary key
+          - key text
+        owner: postgres
+        db: drgon_db
+    - name: Allow traffic from all sources with encrypted password validation
+      become_user: postgres
+      community.postgresql.postgresql_pg_hba:
+        dest: /etc/postgresql/14/main/pg_hba.conf
+        contype: host
+        users: all
+        source: 0.0.0.0/0
+        databases: all
+        method: md5
+        create: yes
+    - name: Listen for traffic on all IPs
+      become_user: postgres
+      community.postgresql.postgresql_set:
+        name: listen_addresses
+        value: "*"
+    - name: Restart PostgreSQL service
+      service:
+        enabled: yes
+        state: restarted
+        name: postgresql
+        use: service
