@@ -47,6 +47,7 @@ app.post("/registry", async (req, res) => {
       res.json({
         "message": "Deployment is already registered on DRGON."
       })
+      return
     }
     res.json({
         "message": "Done.",
