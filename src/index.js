@@ -40,9 +40,14 @@ app.post("/registry", async (req, res) => {
       return
     }
 
-    const id = (await db.result("SELECT * FROM registry", null, r => r.rowCount)) + 1
-    await db.none(`INSERT INTO registry (id, url, description, owner, tags, key) VALUES (${id}, '${urlVal}', '${descriptionVal}', '${ownerVal}', '${tagsVal}', '${keyVal}')`)
-
+    try {
+      const id = (await db.result("SELECT * FROM registry", null, r => r.rowCount)) + 1
+      await db.none(`INSERT INTO registry (id, url, description, owner, tags, key) VALUES (${id}, '${urlVal}', '${descriptionVal}', '${ownerVal}', '${tagsVal}', '${keyVal}')`)
+    } catch {
+      res.json({
+        "message": "Deployment is already registered on DRGON."
+      })
+    }
     res.json({
         "message": "Done.",
     })
