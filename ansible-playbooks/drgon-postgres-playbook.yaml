@@ -40,6 +40,7 @@
         columns:
           - id bigint
           - url text primary key
+          - title text
           - description text
           - owner text
           - tags text
