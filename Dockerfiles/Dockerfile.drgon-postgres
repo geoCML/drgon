@@ -20,9 +20,6 @@ RUN apt install -y ansible
 COPY ./ansible-playbooks/drgon-postgres-requirements.yaml ./ansible-playbooks/drgon-postgres-playbook.yaml ./
 RUN ansible-galaxy collection install ansible.posix && ansible-galaxy install -r drgon-postgres-requirements.yaml --force && ansible-playbook -i,localhost drgon-postgres-playbook.yaml --tags "all" && rm -f ./*.yaml
 
-######### Customize Container Here ###########
-######### End Customizations ###########
-
 # Uninstall Ansible stuff
 RUN rm -rf $HOME/.ansible && apt purge -y ansible*
 
