@@ -18,7 +18,7 @@ app.get("/registry", async (req, res) => {
     const orderByVal = orderBy(req.body)
     const searchByTagVal = searchByTag(req.body)
 
-    const deployments = await db.manyOrNone(`SELECT id, url, description, owner, tags FROM registry WHERE ${searchByTagVal} ORDER BY ${orderByVal} ASC`)
+    const deployments = await db.manyOrNone(`SELECT id, url, title, description, owner, tags FROM registry WHERE ${searchByTagVal} ORDER BY ${orderByVal} ASC`)
 
     res.json({
         "message": "Done.",
@@ -29,11 +29,12 @@ app.get("/registry", async (req, res) => {
 app.post("/registry", async (req, res) => {
     const keyVal = await key(req.body)
     const urlVal = url(req.body)
+    const titleVal = checkForBannedWords(req.body, "title")
     const descriptionVal = checkForBannedWords(req.body, "description")
     const ownerVal = checkForBannedWords(req.body, "owner")
     const tagsVal = checkForBannedWords(req.body, "tags")
 
-    if (keyVal === "" || urlVal === "" || descriptionVal === "" || ownerVal === "" || tagsVal === "") {
+    if (keyVal === "" || urlVal === "" || titleVal === "" || descriptionVal === "" || ownerVal === "" || tagsVal === "") {
       res.json({
         "message": "Invalid request body.",
       })
@@ -42,7 +43,7 @@ app.post("/registry", async (req, res) => {
 
     try {
       const id = (await db.result("SELECT * FROM registry", null, r => r.rowCount)) + 1
-      await db.none(`INSERT INTO registry (id, url, description, owner, tags, key) VALUES (${id}, '${urlVal}', '${descriptionVal}', '${ownerVal}', '${tagsVal}', '${keyVal}')`)
+      await db.none(`INSERT INTO registry (id, url, title, description, owner, tags, key) VALUES (${id}, '${urlVal}', '${titleVal}', '${descriptionVal}', '${ownerVal}', '${tagsVal}', '${keyVal}')`)
     } catch {
       res.json({
         "message": "Deployment is already registered on DRGON."
