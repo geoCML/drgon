@@ -18,7 +18,7 @@ Restart your geoCML instance. After ~1 minute, geoCML Task Scheduler will ping D
 
 ### Using DRGON Over The Internet
 
-A production DRGON instance is hosted at http://172.234.224.156:8000. You can use this public DRGON instance to register non-sensitive/non-confidential geoCML deployments.
+A production DRGON instance is hosted at http://drgon.geocml.com:8000. You can use this public DRGON instance to register non-sensitive/non-confidential geoCML deployments.
 
 ### Using DRGON Over A Private Internal Network
 
