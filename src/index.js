@@ -29,10 +29,10 @@ app.get("/registry", async (req, res) => {
 app.post("/registry", async (req, res) => {
     const keyVal = await key(req.body)
     const urlVal = url(req.body)
-    const titleVal = checkForBannedWords(req.body, "title")
-    const descriptionVal = checkForBannedWords(req.body, "description")
-    const ownerVal = checkForBannedWords(req.body, "owner")
-    const tagsVal = checkForBannedWords(req.body, "tags")
+    const titleVal = sanitizeString(checkForBannedWords(req.body, "title"))
+    const descriptionVal = sanitizeString(checkForBannedWords(req.body, "description"))
+    const ownerVal = sanitizeString(checkForBannedWords(req.body, "owner"))
+    const tagsVal = sanitizeString(checkForBannedWords(req.body, "tags"))
 
     if (keyVal === "" || urlVal === "" || titleVal === "" || descriptionVal === "" || ownerVal === "" || tagsVal === "") {
       res.json({
