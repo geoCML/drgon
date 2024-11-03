@@ -1,6 +1,6 @@
 {
   "name": "drgon",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "DRGON is a Distributed Registry of GISystem Over a Network",
   "main": "index.js",
   "type": "module",
