@@ -82,6 +82,29 @@ app.get("/apikey", async (req, res) => {
   })
 })
 
+app.get("/recommendations", async (req, res) => {
+	const tagsVal = sanitizeString(checkForBannedWords(req.body, "tags"))
+	const limit = parseInt(sanitizeString(checkForBannedWords(req.body, "limit")))
+
+	if (limit === NaN || tagsVal === "") {
+		res.json({
+			"message": "Invalid request body",
+		})
+		return
+	}
+
+	let deployments = []
+	for (const tag of tagsVal.split(",")) {
+		const deployment = await db.manyOrNone(`SELECT * FROM registry WHERE tags LIKE '%${tag}%';`)
+		if (deployments.indexOf(deployment) === -1) deployments.push(deployment)
+	}
+
+	res.json({
+		"message": "Done.",
+		"deployments": deployments.slice(0, limit ? limit < deployments.length : deployments.length),
+	})
+})
+
 app.listen(port, () => {
   console.log(`DRGON is listening on port ${port}`)
 })
