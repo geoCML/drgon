@@ -1,5 +1,5 @@
 import { db } from "./db.js"
-import { checkForBannedWords, email, key, orderBy, searchByTag, url } from "./utils.js"
+import { checkForBannedWords, email, key, orderBy, searchByTag, url, sanitizeString } from "./utils.js"
 import express from "express"
 import { generateApiKey } from "generate-api-key"
 
