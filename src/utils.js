@@ -5,6 +5,12 @@ import { db } from "./db.js"
 
 const validColumns = ["id", "url", "description", "owner", "tags"]
 
+export function sanitizeString(str) {
+	str = str.replaceAll("'", "")
+	str = str.replaceAll("\"", "")
+	return str
+}
+
 export function orderBy(body) {
     return body.hasOwnProperty("orderBy") && validColumns.includes(body["orderBy"]) ? body["orderBy"] : "id"
 }
