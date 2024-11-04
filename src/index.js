@@ -37,7 +37,7 @@ app.post("/registry", async (req, res) => {
     if (keyVal === "" || urlVal === "" || titleVal === "" || descriptionVal === "" || ownerVal === "" || tagsVal === "") {
       res.json({
         "message": "Invalid request body.",
-      })
+      }, 400)
       return
     }
 
@@ -47,7 +47,7 @@ app.post("/registry", async (req, res) => {
     } catch {
       res.json({
         "message": "Deployment is already registered on DRGON."
-      })
+      }, 400)
       return
     }
     res.json({
@@ -62,7 +62,7 @@ app.get("/apikey", async (req, res) => {
   if (emailVal === "") {
       res.json({
         "message": "Invalid request body.",
-      })
+      }, 400)
       return
   }
 
@@ -71,7 +71,7 @@ app.get("/apikey", async (req, res) => {
   } catch {
     res.json({
       "message": "You already registered for an api key."
-    })
+    }, 400)
     return
   }
 
@@ -89,7 +89,7 @@ app.get("/recommendations", async (req, res) => {
 	if (limit === NaN || tagsVal === "") {
 		res.json({
 			"message": "Invalid request body",
-		})
+		}, 400)
 		return
 	}
 
