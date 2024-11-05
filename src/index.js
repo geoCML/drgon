@@ -83,6 +83,7 @@ app.get("/apikey", async (req, res) => {
 })
 
 app.get("/recommendations", async (req, res) => {
+	res.header("Access-Control-Allow-Origin", "*")
 	const tagsVal = sanitizeString(checkForBannedWords(req.body, "tags"))
 	const limit = parseInt(sanitizeString(checkForBannedWords(req.body, "limit")))
 
