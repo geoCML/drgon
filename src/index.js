@@ -98,7 +98,7 @@ app.get("/recommendations", async (req, res) => {
 	let deploymentIds = []
 	for (const tag of tagsVal.split(",")) {
 		const deployment = await db.manyOrNone(`SELECT * FROM registry WHERE tags LIKE '%${tag}%';`)
-		if (!deploymentIds.includes(deployment[0].id)) {
+		if (deployment.length > 0 && !deploymentIds.includes(deployment[0].id)) {
 			deployments.push(deployment)
 			deploymentIds.push(deployment[0].id)
 		}
