@@ -13,8 +13,9 @@ Before interacting with DRGON, you must first have a hosted geoCML deployment wi
 On your deployment's server machine, create the following system environment variables:
 - DRGON_HOST: the host URL of the DRGON instance you want to use (_Do not include trailing slash_)
 - DRGON_API_KEY: your DRGON API key
+- GEOCML_DEPLOYMENT_HOST: the domain name of your hosted geoCML instance
 
-Restart your geoCML instance. After ~1 minute, geoCML Task Scheduler will ping DRGON and automatically register your deployment.
+Re-build and restart your geoCML instance. After ~1 minute, geoCML Task Scheduler will ping DRGON and automatically register your deployment.
 
 ### Using DRGON Over The Internet
 
