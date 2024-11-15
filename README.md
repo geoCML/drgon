@@ -8,7 +8,7 @@ We get it: Finding GIS data can be difficult. DRGON collects a registry geoCML d
 
 ## Quickstart Guide
 
-Before interacting with DRGON, you must first have a hosted geoCML deployment with a properly configured geoCML Server Portal. Next, register for an API key via a POST request to `<DRGON_HOST>:8000/apikey`; You must provide an email address in the request body. Copy your API key to a safe place, you will only be able to view it once!
+Before interacting with DRGON, you must first have a hosted geoCML deployment with a properly configured geoCML Server Portal. Next, register for an API key via a POST request to `<DRGON_HOST>/apikey`; You must provide an email address in the request body. Copy your API key to a safe place, you will only be able to view it once!
 
 On your deployment's server machine, create the following system environment variables:
 - DRGON_HOST: the host URL of the DRGON instance you want to use (_Do not include trailing slash_)
