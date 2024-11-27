@@ -6,9 +6,9 @@ import { db } from "./db.js"
 const validColumns = ["id", "url", "description", "owner", "tags"]
 
 export function sanitizeString(str) {
-	str = str.replaceAll("'", "")
-	str = str.replaceAll("\"", "")
-	return str
+    str = str.replaceAll("'", "")
+    str = str.replaceAll("\"", "")
+    return str
 }
 
 export function orderBy(body) {
@@ -58,4 +58,21 @@ export function email(body) {
     if (!body.hasOwnProperty("email")) return ""
     if (body["email"].match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) return body["email"]
     return ""
+}
+
+export async function queueForRemoval(deployment) {
+    if (await db.oneOrNone(`SELECT count(*) FROM registry WHERE url = '${deployment}';`) === null)
+        return
+
+    setTimeout(async () => {
+        try {
+            await db.none(`DELETE FROM registry WHERE url = '${deployment}';`)
+        } catch (err) { // There is a pending transaction in PSQL, try again...
+            queueForRemoval(deployment)
+        }
+    }, 60 * 1000, deployment)
+}
+
+export async function wipeDB() {
+    await db.none("DELETE FROM registry;")
 }

@@ -1,5 +1,5 @@
 import { db } from "./db.js"
-import { checkForBannedWords, email, key, orderBy, searchByTag, url, sanitizeString } from "./utils.js"
+import { checkForBannedWords, email, key, orderBy, searchByTag, url, sanitizeString, queueForRemoval, wipeDB } from "./utils.js"
 import express from "express"
 import { generateApiKey } from "generate-api-key"
 
@@ -50,6 +50,8 @@ app.post("/registry", async (req, res) => {
       }, 400)
       return
     }
+
+    await queueForRemoval(urlVal)
     res.json({
         "message": "Done.",
     })
@@ -83,33 +85,34 @@ app.get("/apikey", async (req, res) => {
 })
 
 app.get("/recommendations", async (req, res) => {
-	res.header("Access-Control-Allow-Origin", "*")
-	const tagsVal = sanitizeString(checkForBannedWords(req.query, "tags"))
-	const limit = parseInt(sanitizeString(checkForBannedWords(req.query, "limit")))
+    res.header("Access-Control-Allow-Origin", "*")
+    const tagsVal = sanitizeString(checkForBannedWords(req.query, "tags"))
+    const limit = parseInt(sanitizeString(checkForBannedWords(req.query, "limit")))
 
-	if (limit === NaN || tagsVal === "") {
-		res.json({
-			"message": "Invalid request body",
-		}, 400)
-		return
-	}
+    if (limit === NaN || tagsVal === "") {
+        res.json({
+            "message": "Invalid request body",
+        }, 400)
+        return
+    }
 
-	let deployments = []
-	let deploymentIds = []
-	for (const tag of tagsVal.split(",")) {
-		const deployment = await db.manyOrNone(`SELECT * FROM registry WHERE tags LIKE '%${tag}%';`)
-		if (deployment.length > 0 && !deploymentIds.includes(deployment[0].id)) {
-			deployments.push(deployment)
-			deploymentIds.push(deployment[0].id)
-		}
-	}
+    let deployments = []
+    let deploymentIds = []
+    for (const tag of tagsVal.split(",")) {
+        const deployment = await db.manyOrNone(`SELECT * FROM registry WHERE tags LIKE '%${tag}%';`)
+        if (deployment.length > 0 && !deploymentIds.includes(deployment[0].id)) {
+            deployments.push(deployment)
+            deploymentIds.push(deployment[0].id)
+        }
+    }
 
-	res.json({
-		"message": "Done.",
-		"deployments": deployments.slice(0, limit),
-	})
+    res.json({
+        "message": "Done.",
+        "deployments": deployments.slice(0, limit),
+    })
 })
 
-app.listen(port, () => {
+app.listen(port, async () => {
+  await wipeDB()
   console.log(`DRGON is listening on port ${port}`)
 })
