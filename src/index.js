@@ -27,7 +27,7 @@ app.get("/registry", async (req, res) => {
 })
 
 app.post("/registry", async (req, res) => {
-    const keyVal = await sanitizeString(key(req.body))
+    const keyVal = await key(req.body)
     const urlVal = sanitizeString(url(req.body))
     const titleVal = sanitizeString(checkForBannedWords(req.body, "title"))
     const descriptionVal = sanitizeString(checkForBannedWords(req.body, "description"))
