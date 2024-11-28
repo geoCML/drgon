@@ -2,6 +2,7 @@ import { db } from "./db.js"
 import { checkForBannedWords, email, key, orderBy, searchByTag, url, sanitizeString, queueForRemoval, wipeDB } from "./utils.js"
 import express from "express"
 import { generateApiKey } from "generate-api-key"
+import word2vec from "word2vec"
 
 const app = express()
 const port = 8000
@@ -105,6 +106,22 @@ app.get("/recommendations", async (req, res) => {
             deploymentIds.push(deployment[0].id)
         }
     }
+
+    word2vec.loadModel('/drgon/glove.6B.50d.txt', async (err, model) => {
+        if (err) return
+        for (const tag of tagsVal.split(",")) {
+            try {
+                const nearestWords = model.getNearestWords(model.getVector(tag), 3)
+                for (const nearestWord of nearestWords) {
+                    const deployment = await db.manyOrNone(`SELECT * FROM registry WHERE tags LIKE '%${nearestWord}%';`)
+                    if (deployment.length > 0 && !deploymentIds.includes(deployment[0].id)) {
+                        deployments.push(deployment)
+                        deploymentIds.push(deployment[0].id)
+                    }
+                }
+            } catch {}
+        }
+    })
 
     res.json({
         "message": "Done.",
