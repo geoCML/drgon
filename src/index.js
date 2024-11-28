@@ -59,7 +59,7 @@ app.post("/registry", async (req, res) => {
 
 app.get("/apikey", async (req, res) => {
   const key = generateApiKey()
-  const emailVal = email(req.body)
+  const emailVal = sanitizeString(email(req.body))
 
   if (emailVal === "") {
       res.json({
