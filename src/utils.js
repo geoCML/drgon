@@ -16,8 +16,9 @@ export function orderBy(body) {
 }
 
 export async function key(body) {
-    const keyVal = body.hasOwnProperty("key") ? body["key"] : ""
+    const keyVal = body.hasOwnProperty("key") ? sanitizeString(body["key"]) : ""
     if ((await db.result(`SELECT * FROM users WHERE key = '${keyVal}'`, null, r => r.rowCount)) === 0) return ""
+    return keyVal
 }
 
 export function searchByTag(body) {
