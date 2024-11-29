@@ -1,7 +1,8 @@
 import { db } from "./db.js"
-import { checkForBannedWords, email, key, orderBy, searchByTag, url, sanitizeString, queueForRemoval } from "./utils.js"
+import { checkForBannedWords, email, key, orderBy, searchByTag, url, sanitizeString, queueForRemoval, getRecommendedDeployment } from "./utils.js"
 import express from "express"
 import { generateApiKey } from "generate-api-key"
+import word2vec from "word2vec"
 
 const app = express()
 const port = 8000
@@ -18,7 +19,7 @@ app.get("/registry", async (req, res) => {
     const orderByVal = orderBy(req.body)
     const searchByTagVal = searchByTag(req.body)
 
-    const deployments = await db.manyOrNone(`SELECT id, url, title, description, owner, tags FROM registry WHERE ${searchByTagVal} ORDER BY ${orderByVal} ASC`)
+    const deployments = await db.manyOrNone(`SELECT url, title, description, owner, tags FROM registry WHERE ${searchByTagVal} ORDER BY ${orderByVal} ASC`)
 
     res.json({
         "message": "Done.",
@@ -42,8 +43,7 @@ app.post("/registry", async (req, res) => {
     }
 
     try {
-      const id = (await db.result("SELECT * FROM registry", null, r => r.rowCount)) + 1
-      await db.none(`INSERT INTO registry (id, url, title, description, owner, tags, key) VALUES (${id}, '${urlVal}', '${titleVal}', '${descriptionVal}', '${ownerVal}', '${tagsVal}', '${keyVal}')`)
+      await db.none(`INSERT INTO registry (url, title, description, owner, tags, key) VALUES ('${urlVal}', '${titleVal}', '${descriptionVal}', '${ownerVal}', '${tagsVal}', '${keyVal}')`)
     } catch {
       res.json({
         "message": "Deployment is already registered on DRGON."
@@ -97,14 +97,30 @@ app.get("/recommendations", async (req, res) => {
     }
 
     let deployments = []
-    let deploymentIds = []
+    let deploymentURLs = []
     for (const tag of tagsVal.split(",")) {
-        const deployment = await db.manyOrNone(`SELECT * FROM registry WHERE tags LIKE '%${tag}%';`)
-        if (deployment.length > 0 && !deploymentIds.includes(deployment[0].id)) {
+        const deployment = await getRecommendedDeployment(tag, deploymentURLs)
+        if (deployment !== null) {
             deployments.push(deployment)
-            deploymentIds.push(deployment[0].id)
+            deploymentURLs.push(deployment[0].url)
         }
     }
+
+    word2vec.loadModel('/drgon/glove.6B.50d.txt', async (err, model) => {
+        if (err) return
+        for (const tag of tagsVal.split(",")) {
+            try {
+                const nearestWords = model.getNearestWords(model.getVector(tag), 3)
+                for (const nearestWord of nearestWords) {
+                    const deployment = await getRecommendedDeployment(nearestWord, deploymentURLs)
+                    if (deployment !== null) {
+                        deployments.push(deployment)
+                        deploymentURLs.push(deployment[0].url)
+                    }
+                }
+            } catch {}
+        }
+    })
 
     res.json({
         "message": "Done.",

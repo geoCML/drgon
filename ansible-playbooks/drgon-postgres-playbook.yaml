@@ -38,7 +38,6 @@
       community.postgresql.postgresql_table:
         table: registry
         columns:
-          - id bigint
           - url text primary key
           - title text
           - description text

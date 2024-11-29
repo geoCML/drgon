@@ -3,7 +3,7 @@ import { db } from "./db.js"
 
 // Request body sanitizers
 
-const validColumns = ["id", "url", "description", "owner", "tags"]
+const validColumns = ["url", "description", "owner", "tags"]
 
 export function sanitizeString(str) {
     str = str.replaceAll("'", "")
@@ -12,7 +12,7 @@ export function sanitizeString(str) {
 }
 
 export function orderBy(body) {
-    return body.hasOwnProperty("orderBy") && validColumns.includes(body["orderBy"]) ? body["orderBy"] : "id"
+    return body.hasOwnProperty("orderBy") && validColumns.includes(body["orderBy"]) ? body["orderBy"] : "url"
 }
 
 export async function key(body) {
@@ -76,4 +76,12 @@ export async function queueForRemoval(deployment) {
 
 export async function wipeDB() {
     await db.none("DELETE FROM registry;")
+}
+
+export async function getRecommendedDeployment(tag, deploymentURLs) {
+    const deployment = await db.manyOrNone(`SELECT * FROM registry WHERE tags LIKE '%${tag}%';`)
+    if (deployment.length > 0 && !deploymentURLs.includes(deployment[0].url)) {
+        return deployment
+    }
+    return null
 }

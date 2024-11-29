@@ -13,8 +13,17 @@ RUN bash nodesource_setup.sh
 RUN rm nodesource_setup.sh
 RUN apt install -y nodejs
 
+# Install build essentials
+RUN apt install -y build-essential
+
 # Install npm dependencies
 RUN npm i
+
+# Remove build essentials
+RUN apt remove -y build-essential
+
+# Remove install cache
+RUN apt clean autoclean && apt autoremove -y && rm -rf /var/lib/{apt,dpkg,cache,log}/
 
 # Start DRGON server
 CMD npm run start
