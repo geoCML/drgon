@@ -77,3 +77,11 @@ export async function queueForRemoval(deployment) {
 export async function wipeDB() {
     await db.none("DELETE FROM registry;")
 }
+
+export async function getRecommendedDeployment(tag, deploymentURLs) {
+    const deployment = await db.manyOrNone(`SELECT * FROM registry WHERE tags LIKE '%${tag}%';`)
+    if (deployment.length > 0 && !deploymentURLs.includes(deployment[0].url)) {
+        return deployment
+    }
+    return null
+}

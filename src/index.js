@@ -1,8 +1,7 @@
 import { db } from "./db.js"
-import { checkForBannedWords, email, key, orderBy, searchByTag, url, sanitizeString, queueForRemoval } from "./utils.js"
+import { checkForBannedWords, email, key, orderBy, searchByTag, url, sanitizeString, queueForRemoval, getRecommendedDeployment } from "./utils.js"
 import express from "express"
 import { generateApiKey } from "generate-api-key"
-import crypto from "crypto"
 import word2vec from "word2vec"
 
 const app = express()
@@ -100,8 +99,8 @@ app.get("/recommendations", async (req, res) => {
     let deployments = []
     let deploymentURLs = []
     for (const tag of tagsVal.split(",")) {
-        const deployment = await db.manyOrNone(`SELECT * FROM registry WHERE tags LIKE '%${tag}%';`)
-        if (deployment.length > 0 && !deploymentURLs.includes(deployment[0].url)) {
+        const deployment = await getRecommendedDeployment(tag, deploymentURLs)
+        if (deployment !== null) {
             deployments.push(deployment)
             deploymentURLs.push(deployment[0].url)
         }
@@ -113,8 +112,8 @@ app.get("/recommendations", async (req, res) => {
             try {
                 const nearestWords = model.getNearestWords(model.getVector(tag), 3)
                 for (const nearestWord of nearestWords) {
-                    const deployment = await db.manyOrNone(`SELECT * FROM registry WHERE tags LIKE '%${nearestWord}%';`)
-                    if (deployment.length > 0 && !deploymentURLs.includes(deployment[0].url)) {
+                    const deployment = await getRecommendedDeployment(nearestWord, deploymentURLs)
+                    if (deployment !== null) {
                         deployments.push(deployment)
                         deploymentURLs.push(deployment[0].url)
                     }
