@@ -1,5 +1,5 @@
 import { db } from "./db.js"
-import { checkForBannedWords, email, key, orderBy, searchByTag, url, sanitizeString, queueForRemoval, wipeDB } from "./utils.js"
+import { checkForBannedWords, email, key, orderBy, searchByTag, url, sanitizeString, queueForRemoval } from "./utils.js"
 import express from "express"
 import { generateApiKey } from "generate-api-key"
 import word2vec from "word2vec"
@@ -130,6 +130,5 @@ app.get("/recommendations", async (req, res) => {
 })
 
 app.listen(port, async () => {
-  await wipeDB()
   console.log(`DRGON is listening on port ${port}`)
 })
