@@ -1,5 +1,5 @@
 import pgPromise from "pg-promise"
-import { wipeDB } from "./utils"
+import { wipeDB } from "./utils.js"
 
 const pgp = pgPromise({})
 
