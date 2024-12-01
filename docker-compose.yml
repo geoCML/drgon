@@ -9,6 +9,8 @@ services:
     ports:
       - "8000:8000"
     hostname: drgon-server
+    environment:
+      DRGON_POSTGRES_ADMIN_PASSWORD: ${DRGON_POSTGRES_ADMIN_PASSWORD}
     networks:
       - drgon-network
   drgon-postgres:
@@ -17,8 +19,10 @@ services:
       dockerfile: ./Dockerfiles/Dockerfile.drgon-postgres
     image: ghcr.io/geocml/drgon:postgres
     ports:
-      - "5433:5433"
+      - "${DRGON_POSTGRES_PORT}:5433"
     hostname: drgon-postgres
+    environment:
+      DRGON_POSTGRES_ADMIN_PASSWORD: ${DRGON_POSTGRES_ADMIN_PASSWORD}
     networks:
       - drgon-network
 networks:

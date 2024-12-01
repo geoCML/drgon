@@ -26,8 +26,9 @@
         create: yes
     - name: Set postgres' password
       become_user: postgres
-      community.postgresql.postgresql_query:
-        query: ALTER USER postgres PASSWORD 'admin';
+      community.postgresql.postgresql_user:
+        name: postgres
+        password: "{{ lookup('env', 'DRGON_POSTGRES_ADMIN_PASSWORD') }}"
     - name: Create new Postgres database
       become_user: postgres
       community.postgresql.postgresql_db:

@@ -3,7 +3,7 @@ import { wipeDB } from "./utils.js"
 
 const pgp = pgPromise({})
 
-export const db = pgp("postgres://postgres:admin@drgon-postgres:5433/drgon_db")
+export const db = pgp(`postgres://postgres:${process.env.DRGON_POSTGRES_ADMIN_PASSWORD}@drgon-postgres:5433/drgon_db`)
 
 db.connect()
   .then(async (obj) => {
