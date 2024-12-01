@@ -3,6 +3,7 @@ import { checkForBannedWords, email, key, orderBy, searchByTag, url, sanitizeStr
 import express from "express"
 import { generateApiKey } from "generate-api-key"
 import word2vec from "word2vec"
+import packageJSON from "./package.json" with { type: "json" }
 
 const app = express()
 const port = 8000
@@ -12,6 +13,7 @@ app.use(express.json())
 app.get("/", (req, res) => {
   res.json({
     "message": "Welcome to DRGON! See our documentation to learn how to use our REST API: https://geocml.github.io/docs/",
+    "version": packageJSON.version
   })
 })
 
