@@ -1,6 +1,8 @@
 FROM ubuntu:22.04
 USER root
 
+ARG DRGON_POSTGRES_ADMIN_PASSWORD="admin"
+
 RUN apt update
 
 # Install sudo (required by Ansible)
