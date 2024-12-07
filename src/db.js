@@ -1,10 +1,9 @@
 import pgPromise from "pg-promise"
 import { wipeDB } from "./utils.js"
-import { process } from "node:process"
 
 const pgp = pgPromise({})
 
-export const db = pgp(`postgres://postgres:${process.env.DRGON_POSTGRES_ADMIN_PASSWORD}@drgon-postgres:5433/drgon_db`)
+export const db = pgp(`postgres://postgres:${process.env.DRGON_POSTGRES_ADMIN_PASSWORD}@drgon-postgres:5433/drgon_db`) // eslint-disable-line no-undef
 
 db.connect()
   .then(async (obj) => {
