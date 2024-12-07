@@ -91,7 +91,7 @@ app.get("/recommendations", async (req, res) => {
     const tagsVal = sanitizeString(checkForBannedWords(req.query, "tags"))
     const limit = parseInt(sanitizeString(checkForBannedWords(req.query, "limit")))
 
-    if (limit === NaN || tagsVal === "") {
+    if (isNaN(limit) || tagsVal === "") {
         res.status(400).json({
             "message": "Invalid request body",
         })
@@ -120,7 +120,7 @@ app.get("/recommendations", async (req, res) => {
                         deploymentURLs.push(deployment[0].url)
                     }
                 }
-            } catch {}
+            } catch {} // eslint-disable-line no-empty
         }
     })
 

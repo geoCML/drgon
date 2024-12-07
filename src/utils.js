@@ -57,7 +57,7 @@ export function checkForBannedWords(body, key) {
 
 export function email(body) {
     if (!body.hasOwnProperty("email")) return ""
-    if (body["email"].match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) return body["email"]
+    if (body["email"].match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) return body["email"] // eslint-disable-line no-useless-escape
     return ""
 }
 
@@ -68,7 +68,7 @@ export async function queueForRemoval(deployment) {
     setTimeout(async () => {
         try {
             await db.none(`DELETE FROM registry WHERE url = '${deployment}';`)
-        } catch (err) { // There is a pending transaction in PSQL, try again...
+        } catch { // There is a pending transaction in PSQL, try again...
             queueForRemoval(deployment)
         }
     }, 60 * 1000, deployment)
