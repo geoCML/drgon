@@ -10,8 +10,8 @@ const port = 8000
 
 app.use(express.json())
 
-app.get("/", (req, res) => {
-  res.json({
+app.get("/", (_, res) => {
+  res.status(200).json({
     "message": "Welcome to DRGON! See our documentation to learn how to use our REST API: https://geocml.github.io/docs/",
     "version": packageJSON.version
   })
@@ -23,7 +23,7 @@ app.get("/registry", async (req, res) => {
 
     const deployments = await db.manyOrNone(`SELECT url, title, description, owner, tags FROM registry WHERE ${searchByTagVal} ORDER BY ${orderByVal} ASC`)
 
-    res.json({
+    res.status(200).json({
         "message": "Done.",
         deployments
     })
@@ -38,23 +38,23 @@ app.post("/registry", async (req, res) => {
     const tagsVal = sanitizeString(checkForBannedWords(req.body, "tags"))
 
     if (keyVal === "" || urlVal === "" || titleVal === "" || descriptionVal === "" || ownerVal === "" || tagsVal === "") {
-      res.json({
+      res.status(400).json({
         "message": "Invalid request body.",
-      }, 400)
+      })
       return
     }
 
     try {
       await db.none(`INSERT INTO registry (url, title, description, owner, tags, key) VALUES ('${urlVal}', '${titleVal}', '${descriptionVal}', '${ownerVal}', '${tagsVal}', '${keyVal}')`)
     } catch {
-      res.json({
+      res.status(400).json({
         "message": "Deployment is already registered on DRGON."
-      }, 400)
+      })
       return
     }
 
     await queueForRemoval(urlVal)
-    res.json({
+    res.status(200).json({
         "message": "Done.",
     })
 })
@@ -64,22 +64,22 @@ app.get("/apikey", async (req, res) => {
   const emailVal = sanitizeString(email(req.body))
 
   if (emailVal === "") {
-      res.json({
+      res.status(400).json({
         "message": "Invalid request body.",
-      }, 400)
+      })
       return
   }
 
   try {
     await db.none(`INSERT INTO users (email, key) VALUES ('${emailVal}', '${key}')`)
   } catch {
-    res.json({
+    res.status(400).json({
       "message": "You already registered for an api key."
-    }, 400)
+    })
     return
   }
 
-  res.json({
+  res.status(200).json({
     "message": "Done.",
     key,
     "note": "Store this api key in a safe place. You will only be able to view it once."
@@ -92,9 +92,9 @@ app.get("/recommendations", async (req, res) => {
     const limit = parseInt(sanitizeString(checkForBannedWords(req.query, "limit")))
 
     if (limit === NaN || tagsVal === "") {
-        res.json({
+        res.status(400).json({
             "message": "Invalid request body",
-        }, 400)
+        })
         return
     }
 
@@ -124,7 +124,7 @@ app.get("/recommendations", async (req, res) => {
         }
     })
 
-    res.json({
+    res.status(200).json({
         "message": "Done.",
         "deployments": deployments.slice(0, limit),
     })
