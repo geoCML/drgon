@@ -22,5 +22,10 @@
     "generate-api-key": "^1.0.2",
     "pg-promise": "^11.9.1",
     "word2vec": "^1.1.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.16.0",
+    "eslint": "^9.16.0",
+    "globals": "^15.13.0"
   }
 }

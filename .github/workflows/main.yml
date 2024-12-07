@@ -23,14 +23,29 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.11.0'
 
       - name: Lint Dockerfiles
         run: |
           wget -O hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
           mv hadolint /usr/local/bin/hadolint
           chmod +x /usr/local/bin/hadolint
-          ls -la
-          hadolint --config .hadolint.yaml ./Dockerfiles/*
+          hadolint --config .hadolint.yaml Dockerfiles/*
+
+      - name: Lint Dockerfiles
+        run: |
+          wget -O hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
+          mv hadolint /usr/local/bin/hadolint
+          chmod +x /usr/local/bin/hadolint
+          hadolint --config .hadolint.yaml Dockerfiles/*
+
+      - name: Lint JS
+        run: |
+          cd src/
+          npm i
+          npx eslint .
 
   build:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
