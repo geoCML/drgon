@@ -3,32 +3,41 @@ USER root
 
 ARG DRGON_POSTGRES_ADMIN_PASSWORD="admin"
 
-RUN apt update
+RUN apt-get update
 
 # Install sudo (required by Ansible)
-RUN apt install -y sudo
+RUN apt-get install -y sudo
 
 # Install Pip and psycopg2 (required by Ansible)
-RUN apt install -y python3-pip && pip install psycopg2-binary
+RUN apt-get install -y python3-pip && \
+    pip install --no-cache-dir psycopg2-binary
 
 # Install PostgreSQL
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt install -y postgresql
+RUN apt-get install -y postgresql
 
 # Install Ansible
-RUN apt install -y ansible
+RUN apt-get install -y ansible
 
 # Install Ansible dependencies and run through playbook
-COPY ./ansible-playbooks/drgon-postgres-requirements.yaml ./ansible-playbooks/drgon-postgres-playbook.yaml ./
-RUN ansible-galaxy collection install ansible.posix && ansible-galaxy install -r drgon-postgres-requirements.yaml --force && ansible-playbook -i,localhost drgon-postgres-playbook.yaml --tags "all" && rm -f ./*.yaml
+COPY ./ansible-playbooks/drgon-postgres-requirements.yaml ./ansible-playbooks/drgon-postgres-playbook.yaml /
+RUN ansible-galaxy collection install ansible.posix && \
+    ansible-galaxy install -r drgon-postgres-requirements.yaml --force && \
+    ansible-playbook -i,localhost drgon-postgres-playbook.yaml --tags "all" && \
+    rm -f ./*.yaml
 
 # Uninstall Ansible stuff
-RUN rm -rf $HOME/.ansible && apt purge -y ansible*
+RUN rm -rf $HOME/.ansible && \
+    apt-get purge -y ansible*
 
 # Uninstall pip and psycopg2 binary
-RUN pip uninstall -y psycopg2-binary && apt remove -y python3-pip
+RUN pip uninstall -y psycopg2-binary && \
+    apt-get remove -y python3-pip
 
 # Remove install cache
-RUN apt clean autoclean && apt autoremove -y && rm -rf /var/lib/{apt,dpkg,cache,log}/
+RUN apt-get clean autoclean && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/{apt,dpkg,cache,log}/
 
+USER postgres
 CMD service postgresql start && tail -f /dev/null

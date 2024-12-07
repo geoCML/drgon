@@ -1,0 +1,7 @@
+failure-threshold: warning
+format: tty
+ignored:
+- DL3008
+- SC3009
+- DL3025
+- DL3013

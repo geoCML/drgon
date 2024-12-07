@@ -2,29 +2,30 @@ FROM ubuntu:20.04
 
 ARG DRGON_POSTGRES_ADMIN_PASSWORD="admin"
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt update
+RUN apt-get update
 
 COPY ./src /drgon
 WORKDIR /drgon
 
 # Install NodeJS
-RUN apt install -y curl
-RUN curl -sL https://deb.nodesource.com/setup_20.x -o nodesource_setup.sh
-RUN bash nodesource_setup.sh
-RUN rm nodesource_setup.sh
-RUN apt install -y nodejs
+RUN apt-get install -y curl && \
+    curl -sL https://deb.nodesource.com/setup_20.x -o nodesource_setup.sh && \
+    bash nodesource_setup.sh && \
+    rm nodesource_setup.sh && \
+    apt-get install -y nodejs
 
 # Install build essentials
-RUN apt install -y build-essential
+RUN apt-get install -y build-essential
 
 # Install npm dependencies
 RUN npm i
 
 # Remove build essentials
-RUN apt remove -y build-essential
+RUN apt-get remove -y build-essential
 
 # Remove install cache
-RUN apt clean autoclean && apt autoremove -y && rm -rf /var/lib/{apt,dpkg,cache,log}/
+RUN apt-get clean autoclean && apt-get autoremove -y && \
+    rm -rf /var/lib/{apt,dpkg,cache,log}/
 
 # Start DRGON server
 CMD npm run start
